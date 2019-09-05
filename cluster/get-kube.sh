@@ -122,6 +122,17 @@ function create_cluster {
   )
 }
 
+# Get default service account credentials of the VM.
+GCE_METADATA_INTERNAL="http://metadata.google.internal/computeMetadata/v1/instance"
+function get-credentials {
+  curl "${GCE_METADATA_INTERNAL}/service-accounts/default/token" -H "Metadata-Flavor: Google" -s | python -c \
+    'import sys; import json; print(json.loads(sys.stdin.read())["access_token"])'
+}
+
+function valid-storage-scope {
+  curl "${GCE_METADATA_INTERNAL}/service-accounts/default/scopes" -H "Metadata-Flavor: Google" -s | grep -q "auth/devstorage"
+}
+
 if [[ -n "${KUBERNETES_SKIP_DOWNLOAD-}" ]]; then
   create_cluster
   exit 0
@@ -227,8 +238,10 @@ if [[ -z "${KUBERNETES_SKIP_CONFIRM-}" ]]; then
 fi
 
 if "${need_download}"; then
+  echo "haha - using Sen's secret recipe here"
   if [[ $(which curl) ]]; then
-    curl -fL --retry 5 --keepalive-time 2 "${kubernetes_tar_url}" -o "${file}"
+    curl_headers="Authorization: Bearer $(get-credentials)"
+    curl ${curl_headers:+-H "${curl_headers}"} -fL --retry 3 --keepalive-time 2 "${kubernetes_tar_url}" -o "${file}"
   elif [[ $(which wget) ]]; then
     wget "${kubernetes_tar_url}"
   else
@@ -240,6 +253,10 @@ fi
 echo "Unpacking kubernetes release ${KUBE_VERSION}"
 rm -rf "${PWD}/kubernetes"
 tar -xzf ${file}
+
+echo "Get get-kube-binaries.sh from HEAD"
+curl -fL --retry 3 --keepalive-time 2 "${kubernetes_tar_url}" -o ./cluster/get-kube-binaries.sh
+chmod +X ./cluster/get-kube-binaries.sh
 
 download_kube_binaries
 create_cluster
