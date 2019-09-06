@@ -255,7 +255,7 @@ rm -rf "${PWD}/kubernetes"
 tar -xzf ${file}
 
 echo "Get get-kube-binaries.sh from Sen's repository"
-curl -fL --retry 3 --keepalive-time 2 "https://raw.githubusercontent.com/krzyzacy/kubernetes/ce47e8a789d1159b2235da492b8c6f0c7f242c2e/cluster/get-kube-binaries.sh" -o ./kubernetes/cluster/get-kube-binaries.sh
+curl -fL --retry 3 --keepalive-time 2 "https://raw.githubusercontent.com/krzyzacy/kubernetes/521d31c7695fea753fc70a4dc42a3a4d057a9148/cluster/get-kube-binaries.sh" -o ./kubernetes/cluster/get-kube-binaries.sh
 chmod +X ./kubernetes/cluster/get-kube-binaries.sh
 
 download_kube_binaries
