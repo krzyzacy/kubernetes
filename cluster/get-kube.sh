@@ -254,9 +254,9 @@ echo "Unpacking kubernetes release ${KUBE_VERSION}"
 rm -rf "${PWD}/kubernetes"
 tar -xzf ${file}
 
-echo "Get get-kube-binaries.sh from HEAD"
-curl -fL --retry 3 --keepalive-time 2 "${kubernetes_tar_url}" -o ./cluster/get-kube-binaries.sh
-chmod +X ./cluster/get-kube-binaries.sh
+echo "Get get-kube-binaries.sh from Sen's repository"
+curl -fL --retry 3 --keepalive-time 2 "https://raw.githubusercontent.com/krzyzacy/kubernetes/ce47e8a789d1159b2235da492b8c6f0c7f242c2e/cluster/get-kube-binaries.sh" -o ./kubernetes/cluster/get-kube-binaries.sh
+chmod +X ./kubernetes/cluster/get-kube-binaries.sh
 
 download_kube_binaries
 create_cluster
